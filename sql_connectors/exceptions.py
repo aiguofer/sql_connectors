@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 class SQLConnectorException(Exception):
     """Exception from SQL Connector"""
 

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from builtins import input, str, open
 
 from getpass import getpass

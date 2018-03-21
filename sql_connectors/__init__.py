@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from .config_util import get_available_envs_factory as _envs_factory, get_available_configs as _get_available_configs
 from .client import get_client_factory as _client_factory
 
