@@ -19,7 +19,7 @@ __all__ = [
     'set_key_value'
 ]
 
-CONFIG_BASE_DIR = os.environ.get('SQL_CONNECTOR_CONFIG_DIR',
+CONFIG_BASE_DIR = os.environ.get('SQL_CONNECTORS_CONFIG_DIR',
                                  os.path.expanduser("~/.config/sql_connectors"))
 
 def parse_config(conf, env):
