@@ -96,8 +96,9 @@ def get_available_envs_factory(config_file):
         try:
             with open(path) as reader:
                 keys = list(json.load(reader))
-                non_envs = ['drivername', 'relative_paths', 'default_env', 'default_schema', 'default_reflect']
-                return filter(lambda x: x not in non_envs, keys)
+                non_envs = ['drivername', 'relative_paths',
+                            'default_env', 'default_schema', 'default_reflect']
+                return [key for key in keys if key not in non_envs]
         except IOError:
             raise ConfigurationException('Config file not found')
     return get_available_envs
