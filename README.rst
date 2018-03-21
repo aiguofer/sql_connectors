@@ -38,43 +38,51 @@ Configurations
 
 You'll need to set your configuration files in ``~/.config/sql_connectors``. Optionally, you can specify a different configuration directory with the ``SQL_CONNECTORS_CONFIG_DIR`` environment variable. The ``example_connection.json`` file is provided as a template; feel free to replace this with your own connection details and re-name the file.
 
-.. include:: example_connection.json
-   :literal:
+.. code:: javascript
+
+   {
+       "drivername": "sqlite",
+       "relative_paths": ["database"],
+       "default_env": "default",
+       "default": {
+           "database": "example_connection.db"
+       }
+   }
 
 The fields mean the following:
 
    drivername (string)
-      Required. This is a SQLAlchemy dialect or dialect+driver. See the `SQLAlchemy Engine documentation <http://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls>`_ for more details. You may first have to install the required python modules for your dialect+driver to work if it's a third party plug-in.
+      This required field is a SQLAlchemy dialect or dialect+driver. See the `SQLAlchemy Engine documentation <http://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls>`_ for more details. You may first have to install the required python modules for your dialect+driver to work if it's a third party plug-in.
 
    relative_paths (list of strings)
-      Optional. This field lets you specify if an option for your connection needs to load a file relative to your config directory. In the example above, it will convert ``certs/postgresql/root.crt`` to a full path using the config dir as the base.
+      This optional field lets you specify if an option for your connection needs to load a file relative to your config directory. For example, if you had a connection that needed to use a cert, you could add ``query.sslrootcert`` to this list, set ``"query": { "sslmode": "verify-ca", "sslrootcert": "certs/root.crt"}``, and drop the file in ``$SQL_CONNECTORS_CONFIG_DIR/certs/root.crt``.
 
    default_env (string)
-      Optional. This field lets you specify which environment should be used by default. If not included, it will use ``default``.
+      This optional field lets you specify which environment should be used by default. If not included, it will use ``default``.
 
    default_schema (string)
-      Optional. This field lets you specify which schema should be used by default. If not included, it will use ``None``.
+      This optional field lets you specify which schema should be used by default. If not included, it will use ``None``.
 
    default_reflect (boolean)
-      Optional. This field lets you specify whether it should reflect the data source by default. If not included, it will use ``False``.
+      This optional field lets you specify whether it should reflect the data source by default. If not included, it will use ``False``.
 
    env.username (string)
-      Required. This field specifies the username for the connection.
+      This optional field specifies the username for the connection. If it's left out or set to null and the driver is not 'sqlite', the user will be prompte when they try to create the client. If the connection doesn't have credentials, set this to an empty string. Should not be set for 'sqlite'.
 
    env.password (string)
-      Required. This field specifies the password for the connection.
+      This optional field specifies the password for the connection. If it's left out or set to null and the driver is not 'sqlite', the user will be prompte when they try to create the client. If the connection doesn't have credentials, set this to an empty string. Should not be set for 'sqlite'.
 
    env.host (string)
-      Required. This field specifies the host for the connection.
+      This optional field specifies the host for the connection. Should not be set for 'sqlite'.
 
    env.port (string or integer)
-      Required. This field specifies the port for the connection.
+      This optional field specifies the port for the connection. Should not be set for 'sqlite'.
 
    env.database (string)
-      Required. This field specifies the database name for the connection.
+      This optional field specifies the database name for the connection. If it's a 'sqlite' connection and left empty, it will use ``:memory:``. Otherwise, you can specify a relative path or an absolute path; if you want the file in your config directory, you can use the ``relative_paths`` property.
 
    env.query (object)
-      Optional. This field is a json object with options to pass onto the dialect and/or DBAPI upon connect.
+      This optional field is a json object with options to pass onto the dialect and/or DBAPI upon connect.
 
 How-To
 ------

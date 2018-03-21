@@ -7,6 +7,8 @@ import os
 import json
 from glob import glob
 
+from sqlalchemy.engine.url import URL
+
 from .exceptions import ConfigurationException
 
 __all__ = [
@@ -14,7 +16,6 @@ __all__ = [
     'full_path',
     'get_available_configs',
     'get_available_envs_factory',
-    'prompt_creds',
     'get_key_value',
     'set_key_value'
 ]
@@ -22,30 +23,37 @@ __all__ = [
 CONFIG_BASE_DIR = os.environ.get('SQL_CONNECTORS_CONFIG_DIR',
                                  os.path.expanduser("~/.config/sql_connectors"))
 
+
 def parse_config(conf, env):
-    """Get the specific environment and expand any relative paths
+    """Get the specific environment, expand any relative paths, and return
+    a url for create_engine
 
     :param str conf: Name of config file without the file extension
     :param str env: Name of the environment within the config file
     """
-    relative_paths = conf.get('relative_paths', [])
-
     if env not in conf:
         raise ConfigurationException('Env does not exist in config file')
 
+    if 'drivername' not in conf:
+        raise ConfigurationException('Missing drivername')
+
+    drivername = conf['drivername']
+
     env_conf = conf[env]
+    env_conf['drivername'] = drivername
 
-    if not env_conf.get('username', None) or \
-       not env_conf.get('password', None):
-        env_conf['username'], env_conf['password'] = prompt_creds()
-
-    for rel_path in relative_paths:
+    for rel_path in conf.get('relative_paths', []):
         sub_path = get_key_value(env_conf, rel_path)
         set_key_value(env_conf, rel_path, full_path(sub_path))
 
-    env_conf['drivername'] = conf.get('drivername', None)
+    if 'sqlite' not in drivername:
+        username = env_conf.get('username', None)
+        env_conf['username'] = _get_username(username)
 
-    return env_conf
+        password = env_conf.get('password', None)
+        env_conf['password'] = _get_password(password)
+
+    return URL(**env_conf)
 
 
 def full_path(sub_path):
@@ -104,9 +112,22 @@ def get_available_envs_factory(config_file):
     return get_available_envs
 
 
-def prompt_creds(username_prompt='Username: ', password_prompt='Password: '):
-    """Prompt user for credentials, returns (username, password)"""
-    return input(username_prompt), getpass(password_prompt)
+def _get_username(username):
+    """Get username and prompt user if necessary. Set to None if it's empty."""
+    if username is None:
+        username = input('Username: ')
+    if username == '':
+        username = None
+    return username
+
+
+def _get_password(password):
+    """Get password and prompt user if necessary. Set to None if it's empty."""
+    if password is None:
+        password = getpass('Password: ')
+    if password == '':
+        password = None
+    return password
 
 
 def get_key_value(obj, key):

@@ -8,7 +8,6 @@ from contextlib import contextmanager
 import pandas as pd
 from sqlalchemy import create_engine, MetaData, Table, inspect
 from sqlalchemy.engine import Engine
-from sqlalchemy.engine.url import URL
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -105,12 +104,7 @@ class SqlClient(Engine):
             with open(path) as reader:
                 conf = json.load(reader)
 
-                env_conf = parse_config(conf, self.env)
-
-                if not env_conf['drivername']:
-                    raise ConfigurationException('Invalid drivername')
-
-                return URL(**env_conf)
+                return parse_config(conf, self.env)
         except IOError:
             raise ConfigurationException('Config file not found')
 

@@ -1,18 +1,8 @@
 {
-    "drivername": "postgresql+psycopg2",
-    "relative_paths": ["query.sslrootcert"],
+    "drivername": "sqlite",
+    "relative_paths": ["database"],
     "default_env": "default",
-    "default_schema": "public",
-    "default_reflect": false,
     "default": {
-        "username": "user",
-        "password": "password",
-        "host": "example.example.com",
-        "port": 5432,
-        "database": "dbname",
-        "query": {
-            "sslmode": "verify-ca",
-            "sslrootcert": "certs/postgresql/root.crt"
-        }
+        "database": "example_connection.db"
     }
 }
