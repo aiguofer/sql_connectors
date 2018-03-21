@@ -1,16 +1,33 @@
 # -*- coding: utf-8 -*-
 
-from .config_util import get_available_envs_factory as _envs_factory, get_available_configs as _get_available_configs
-from .client import get_client_factory as _client_factory
+from .config_util import get_available_envs_factory, get_available_configs
+from .client import get_client_factory
 
-_configs = _get_available_configs()
+configs = get_available_configs()
 
-__all__ = [config for config, default in _configs] + \
-          [config + '_envs' for config, default in _configs]
+__all__ = [config for config, default in configs] + \
+          [config + '_envs' for config, default in configs]
 
-for config_file, defaults in _configs:
-    exec('{0}={1}'.format(config_file,
-                          '_client_factory("{0}", "{1}", "{2}")'.format(config_file,
-                                                                        defaults['default_env'],
-                                                                        defaults['default_schema'])))
-    exec('{0}_envs={1}'.format(config_file, '_envs_factory("{0}")'.format(config_file)))
+for config_file, defaults in configs:
+    varname = config_file
+    val = 'get_client_factory("{0}", "{1}", "{2}")'.format(config_file,
+                                                           defaults['default_env'],
+                                                           defaults['default_schema'])
+    exec('{0}={1}'.format(varname, val))
+
+    varname = config_file + '_envs'
+    val = 'get_available_envs_factory("{0}")'.format(config_file)
+    exec('{0}={1}'.format(varname, val))
+
+
+# Delete temp variables so they don't pollute auto-complete
+del configs
+del config
+del default
+del config_file
+del defaults
+del get_available_envs_factory
+del get_available_configs
+del get_client_factory
+del varname
+del val
