@@ -23,7 +23,7 @@ def post_install():
         os.makedirs(config_dir)
         os.makedirs(os.path.join(config_dir, 'certs'))
         shutil.copy2('example_connection.json', config_dir)
-    print("Please place your config files in {0}. Take a look at example_connection.json")
+    print("Please place your config files in {0}. Take a look at example_connection.json".format(config_dir))
 
 
 class PostDevelopCommand(develop):
