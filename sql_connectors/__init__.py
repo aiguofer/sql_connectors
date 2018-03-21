@@ -20,14 +20,10 @@ for config_file, defaults in configs:
     exec('{0}={1}'.format(varname, val))
 
 
-# Delete temp variables so they don't pollute auto-complete
-del configs
-del config
-del default
-del config_file
-del defaults
-del get_available_envs_factory
-del get_available_configs
-del get_client_factory
-del varname
-del val
+# Delete temp variables so they don't pollute auto-complete in ipython
+# this is only useful in python 2.7, doesn't seem to matter in python 3
+for var in ['configs', 'config', 'default', 'config_file', 'defaults',
+            'get_available_envs_factory', 'get_available_configs',
+            'get_client_factory', 'varname', 'val', 'var']:
+    if var in locals():
+        del locals()[var]
