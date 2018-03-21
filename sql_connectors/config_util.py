@@ -5,7 +5,6 @@ import os
 import json
 from glob import glob
 
-import sql_connectors
 from .exceptions import ConfigurationException
 
 __all__ = [
@@ -18,9 +17,8 @@ __all__ = [
     'set_key_value'
 ]
 
-_module_dir = os.path.dirname(sql_connectors.__file__)
 CONFIG_BASE_DIR = os.environ.get('SQL_CONNECTOR_CONFIG_DIR',
-                                 os.path.join(_module_dir, 'config_files'))
+                                 os.path.expanduser("~/.config/sql_connectors"))
 
 def parse_config(conf, env):
     """Get the specific environment and expand any relative paths
