@@ -83,6 +83,7 @@ setup(
     ],
     description="A simple wrapper for SQL connections using SQLAlchemy and Pandas read_sql to standardize SQL workflow.",
     install_requires=install_requires,
+    dependency_links=dependency_links,
     license="MIT license",
     long_description=long_description,
     include_package_data=True,

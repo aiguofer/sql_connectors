@@ -1,14 +1,6 @@
 decorator
 future
-git+https://github.com/dadadel/pyment.git#egg=pyment
+git+https://github.com/dadadel/pyment/tarball/master#egg=pyment
 hg+https://bitbucket.org/gsakkis/memoized#egg=memoized
 pandas
-psycopg2
-pymongo
-pymysql
-sqlalchemy-redshift
-requests
-splunk-sdk;python_version<"3.0"
 SQLAlchemy
-python-gitlab
-pygithub
