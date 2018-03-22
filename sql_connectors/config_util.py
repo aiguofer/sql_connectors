@@ -81,7 +81,7 @@ def _get_config_defaults(path):
     """
     defaults = {
         'default_env': 'default',
-        'default_schema': 'public',
+        'default_schema': None,
         'default_reflect': False
     }
     try:
