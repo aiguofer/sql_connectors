@@ -87,6 +87,9 @@ The fields mean the following:
    env.query (object)
       This optional field is a json object with options to pass onto the dialect and/or DBAPI upon connect.
 
+   env.allowed_hosts (list of strings)
+      This optional field is a list of strings containing hostnames where the given credentials are accepted. If the hostname is not in the list, it will prompt the user for credentials. This was added due to some specific usecase where we share service credentials but they're only allowed on our common servers.
+
 How-To
 ------
 

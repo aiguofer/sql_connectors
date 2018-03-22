@@ -45,11 +45,11 @@ def parse_config(conf, env):
         set_key_value(env_conf, rel_path, full_path(sub_path))
 
     if 'sqlite' not in drivername:
-        username = env_conf.get('username', None)
-        env_conf['username'] = _get_username(username)
+        env_conf['username'] = _get_username(env_conf)
 
-        password = env_conf.get('password', None)
-        env_conf['password'] = _get_password(password)
+        env_conf['password'] = _get_password(env_conf)
+
+        conf.pop('allowed_hosts', [])
 
     return URL(**env_conf)
 
@@ -105,7 +105,7 @@ def get_available_envs_factory(config_file):
         try:
             with open(path) as reader:
                 keys = list(json.load(reader))
-                non_envs = ['drivername', 'relative_paths',
+                non_envs = ['drivername', 'relative_paths', 'allowed_hosts',
                             'default_env', 'default_schema', 'default_reflect']
                 return [key for key in keys if key not in non_envs]
         except IOError:
@@ -113,18 +113,22 @@ def get_available_envs_factory(config_file):
     return get_available_envs
 
 
-def _get_username(username):
+def _get_username(conf):
     """Get username and prompt user if necessary. Set to None if it's empty."""
-    if username is None:
+    username = conf.get('username', None)
+    allowed_hosts = conf.get('allowed_hosts', [])
+    if username is None or (len(allowed_hosts) > 0 and not os.uname()[1] in allowed_hosts):
         username = input('Username: ')
     if username == '':
         username = None
     return username
 
 
-def _get_password(password):
+def _get_password(conf):
     """Get password and prompt user if necessary. Set to None if it's empty."""
-    if password is None:
+    password = conf.get('password', None)
+    allowed_hosts = conf.get('allowed_hosts', [])
+    if password is None or (len(allowed_hosts) > 0 and not os.uname()[1] in allowed_hosts):
         password = getpass('Password: ')
     if password == '':
         password = None
