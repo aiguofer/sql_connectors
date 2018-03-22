@@ -2,7 +2,7 @@ decorator==4.2.1
 future==0.16.0
 git+https://github.com/dadadel/pyment.git#egg=pyment
 hg+https://bitbucket.org/gsakkis/memoized#egg=memoized
-pandas
+pandas==0.22.0
 psycopg2
 pymongo
 pymysql
