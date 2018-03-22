@@ -93,9 +93,9 @@ Here's a basic usage example assuming the example config file exists:
 
 .. code:: python
 
-   from sql_connectors import example_connection, example_connection_vars
+   from sql_connectors import example_connection, example_connection_envs
 
-   available_envs = example_connection_vars()
+   available_envs = example_connection_envs()
    client = example_connection(env=available_envs[0], reflect=True)
 
    available_tables = client.table_names()
