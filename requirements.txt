@@ -9,6 +9,6 @@ pymysql==0.8.0
 sqlalchemy-redshift==0.7.1
 requests==2.18.4
 splunk-sdk==1.6.2;python_version<"3.0"
-SQLAlchemy
+SQLAlchemy==1.2.5
 python-gitlab
 pygithub
