@@ -95,6 +95,15 @@ Here's a basic usage example assuming the example config file exists:
 
 .. code:: python
 
+   from sql_connectors import example_connection
+   client = example_connection()
+   client.read_sql('select 1')
+
+
+Here's a more complex example that's pretty redundant but shows more functionality
+
+.. code:: python
+
    from sql_connectors import example_connection, example_connection_envs
 
    available_envs = example_connection_envs()
