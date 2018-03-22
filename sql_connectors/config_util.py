@@ -20,9 +20,7 @@ __all__ = [
     'set_key_value'
 ]
 
-CONFIG_BASE_DIR = os.environ.get('SQL_CONNECTORS_CONFIG_DIR',
-                                 os.path.expanduser("~/.config/sql_connectors"))
-
+DEFAULT_CONFIG_DIR = "~/.config/sql_connectors"
 
 def parse_config(conf, env):
     """Get the specific environment, expand any relative paths, and return
@@ -61,7 +59,10 @@ def full_path(sub_path):
 
     :param str sub_path: Subpath relative to the config base dir
     """
-    return os.path.join(CONFIG_BASE_DIR, sub_path)
+    config_base_dir = os.environ.get('SQL_CONNECTORS_CONFIG_DIR',
+                                     DEFAULT_CONFIG_DIR)
+
+    return os.path.join(os.path.expanduser(config_base_dir), sub_path)
 
 
 def get_available_configs():
