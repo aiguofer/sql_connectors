@@ -53,11 +53,6 @@ with open(os.path.join(here, 'requirements.txt'), encoding='utf-8') as f:
 install_requires = [x.strip() for x in all_reqs if not re.search(vcs, x) and x.strip() != '']
 dependency_links = [re.sub(vcs, '', x.strip()) for x in all_reqs if re.search(vcs, x)]
 
-for dep in dependency_links:
-    match = re.search('egg=((?:\w|-)+)', dep)
-    if match:
-        install_requires.append(match.group(1))
-
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
