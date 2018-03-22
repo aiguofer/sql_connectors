@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from .config_util import get_available_envs_factory, get_available_configs
 from .client import get_client_factory
+from ._version import __version__, __version_info__
 
 def setup():
     """Create get_client and get_available_envs functions for each datasource using
