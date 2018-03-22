@@ -38,6 +38,8 @@ Configurations
 
 You'll need to set your configuration files in ``~/.config/sql_connectors``. Optionally, you can specify a different configuration directory with the ``SQL_CONNECTORS_CONFIG_DIR`` environment variable. The ``example_connection.json`` file is provided as a template; feel free to replace this with your own connection details and re-name the file.
 
+The contents of the example file are:
+
 .. code:: javascript
 
    {
@@ -55,7 +57,7 @@ The fields mean the following:
       This required field is a SQLAlchemy dialect or dialect+driver. See the `SQLAlchemy Engine documentation <http://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls>`_ for more details. You may first have to install the required python modules for your dialect+driver to work if it's a third party plug-in.
 
    relative_paths (list of strings)
-      This optional field lets you specify if an option for your connection needs to load a file relative to your config directory. For example, if you had a connection that needed to use a cert, you could add ``query.sslrootcert`` to this list, set ``"query": { "sslmode": "verify-ca", "sslrootcert": "certs/root.crt"}``, and drop the file in ``$SQL_CONNECTORS_CONFIG_DIR/certs/root.crt``.
+      This optional field lets you specify if an option for your connection needs to load a file relative to your config directory. For example, if you had a connection that needed to use a cert, you could add ``query.sslrootcert`` to this list, set ``"query": { "sslmode": "verify-ca", "sslrootcert": "certs/root.crt"}``, and drop the cert in ``$SQL_CONNECTORS_CONFIG_DIR/certs/root.crt``.
 
    default_env (string)
       This optional field lets you specify which environment should be used by default. If not included, it will use ``default``.
@@ -98,6 +100,7 @@ Here's a basic usage example assuming the example config file exists:
    available_envs = example_connection_envs()
    client = example_connection(env=available_envs[0], reflect=True)
 
+   client.read_sql('select 1').to_sql('example_table', client, if_exists='replace')
    available_tables = client.table_names()
    table1 = client.get_table(available_tables[0])
    df = client.read_sql(table1.select())
