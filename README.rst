@@ -25,6 +25,7 @@ A simple wrapper for SQL connections using SQLAlchemy and Pandas read_sql to sta
 
 * Free software: MIT license
 * Documentation: https://sql-connectors.readthedocs.io.
+* Repo: https://github.com/aiguofer/sql_connectors.
 
 
 Features
