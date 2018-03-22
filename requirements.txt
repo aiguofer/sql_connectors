@@ -3,7 +3,7 @@ future==0.16.0
 git+https://github.com/dadadel/pyment.git#egg=pyment
 hg+https://bitbucket.org/gsakkis/memoized#egg=memoized
 pandas==0.22.0
-psycopg2
+psycopg2==2.7.4
 pymongo
 pymysql
 sqlalchemy-redshift
