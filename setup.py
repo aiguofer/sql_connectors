@@ -51,7 +51,7 @@ with open(os.path.join(here, 'requirements.txt'), encoding='utf-8') as f:
     all_reqs = f.read().split('\n')
 
 install_requires = [x.strip() for x in all_reqs if not re.search(vcs, x) and x.strip() != '']
-dependency_links = [re.sub(vcs, '', x.strip()) for x in all_reqs if re.search(vcs, x)]
+dependency_links = [re.sub(vcs, '', x.strip()).sub('.git', '/tarball/master') for x in all_reqs if re.search(vcs, x)]
 
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
