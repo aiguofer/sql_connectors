@@ -15,3 +15,4 @@ deploy:
   on:
     tags: true
     repo: aiguofer/sql_connectors
+    python: '3.6'
