@@ -39,7 +39,6 @@ class PostInstallCommand(install):
         install.run(self)
         post_install()
 
-
 vcs = "^(git|hg)\\+"
 
 # Get the long description from the README file
@@ -59,10 +58,9 @@ dependency_links = [re.sub(vcs, '', x.strip()).replace('.git', '/tarball/master'
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-
-setup_requirements = [ ]
-
-test_requirements = [ ]
+# get the dependencies and installs
+with open(os.path.join(here, 'requirements_dev.txt'), encoding='utf-8') as f:
+    dev_requires = f.read().split('\n')
 
 setup(
     author="Diego Fernandez",
@@ -81,6 +79,9 @@ setup(
     ],
     description="A simple wrapper for SQL connections using SQLAlchemy and Pandas read_sql to standardize SQL workflow.",
     install_requires=install_requires,
+    extras_require={
+        'dev': dev_requires
+    },
     dependency_links=dependency_links,
     license="MIT license",
     long_description=long_description,
@@ -88,10 +89,9 @@ setup(
     keywords='sql_connectors',
     name='sql_connectors',
     packages=find_packages(include=['sql_connectors']),
-    setup_requires=setup_requirements,
-    test_suite='tests',
-    tests_require=test_requirements,
     url='https://github.com/aiguofer/sql_connectors',
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
     version=__version__,
     zip_safe=False,
     cmdclass={
