@@ -49,7 +49,7 @@ def parse_config(conf, env):
 
         env_conf['password'] = _get_password(env_conf)
 
-        conf.pop('allowed_hosts', [])
+        env_conf.pop('allowed_hosts', [])
 
     return URL(**env_conf)
 
