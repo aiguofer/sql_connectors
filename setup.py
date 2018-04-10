@@ -55,6 +55,8 @@ install_requires = [x.strip()
 dependency_links = [re.sub(vcs, '', x.strip()).replace('.git', '/tarball/master')
                     for x in all_reqs if re.search(vcs, x)]
 
+install_requires += [x.split('=')[-1].replace('-', '==') for x in dependency_links]
+
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 

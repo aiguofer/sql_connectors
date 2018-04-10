@@ -12,7 +12,7 @@ To install SQL Connectors, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install sql_connectors
+    $ pip install --process-dependency-links sql_connectors
 
 This is the preferred method to install SQL Connectors, as it will always install the most recent stable release.
 

@@ -34,6 +34,41 @@ Features
 * Standardized client for working with different SQL datasources, including a standardized format for defining your connection configurations
 * A SqlClient interface based off the SQLAlchemy ``Engine`` with some helpful functions like Pandas' ``read_sql`` and functions to leverage ``reflection`` from SQLAlchemy
 
+Installation
+------------
+
+Stable release
+~~~~~~~~~~~~~~
+
+To install SQL Connectors, run this command in your terminal:
+
+.. code-block:: console
+
+    $ pip install --process-dependency-links sql_connectors
+
+This is the preferred method to install SQL Connectors, as it will always install the most recent stable release.
+
+If you don't have `pip`_ installed, this `Python installation guide`_ can guide
+you through the process.
+
+.. _pip: https://pip.pypa.io
+.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
+
+
+Dev install
+~~~~~~~~~~~
+
+The sources for SQL Connectors can be downloaded from the `Github repo`_.
+
+You can clone the public repository and install in development mode:
+
+.. code-block:: console
+
+    $ git clone git://github.com/aiguofer/sql_connectors
+    $ cd sql_connectors
+    $ pip install --process-dependency-links -e .[dev]
+
+
 Configurations
 --------------
 
@@ -126,3 +161,4 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+.. _Github repo: https://github.com/aiguofer/sql_connectors
