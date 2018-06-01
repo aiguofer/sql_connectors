@@ -1,6 +1,5 @@
 decorator
 future
-git+https://github.com/dadadel/pyment.git#egg=pyment-0.3.2
 memoized
 pandas
 SQLAlchemy
