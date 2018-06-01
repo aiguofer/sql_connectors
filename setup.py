@@ -64,6 +64,16 @@ with open('HISTORY.rst') as history_file:
 with open(os.path.join(here, 'requirements_dev.txt'), encoding='utf-8') as f:
     dev_requires = f.read().split('\n')
 
+dev_requires = [x.strip()
+                for x in dev_requires if not re.search(vcs, x) and x.strip() != '']
+
+dev_dependency_links = [re.sub(vcs, '', x.strip()).replace('.git', '/tarball/master')
+                    for x in dev_requires if re.search(vcs, x)]
+
+dev_requires += [x.split('=')[-1].replace('-', '==') for x in dev_dependency_links]
+
+dependency_links += dev_dependency_links
+
 setup(
     author="Diego Fernandez",
     author_email='aiguo.fernandez@gmail.com',
