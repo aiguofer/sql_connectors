@@ -91,6 +91,8 @@ def _get_config_defaults(path):
             return dict((k, conf.get(k, defaults[k])) for k in defaults)
     except IOError:
         raise ConfigurationException('Config file not found')
+    except:
+        raise ConfigurationException('Error reading {0}'.format(path))
 
 
 def get_available_envs_factory(config_file):
