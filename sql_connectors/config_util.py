@@ -54,7 +54,7 @@ def parse_config(conf, env):
     return URL(**env_conf)
 
 
-def full_path(sub_path):
+def full_path(sub_path=""):
     """Turn a path relative to the config base dir into a full path
 
     :param str sub_path: Subpath relative to the config base dir
