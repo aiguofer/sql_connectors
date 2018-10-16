@@ -6,6 +6,7 @@ from getpass import getpass
 import os
 import json
 from glob import glob
+from warnings import warn
 
 from sqlalchemy.engine.url import URL
 
@@ -21,18 +22,23 @@ __all__ = [
 ]
 
 DEFAULT_CONFIG_DIR = "~/.config/sql_connectors"
+CONFIG_DEFAULTS = {
+        'default_env': 'default',
+        'default_schema': None,
+        'default_reflect': False
+    }
 
 def parse_config(conf, env):
     """Get the specific environment, expand any relative paths, and return
     a url for create_engine
 
-    :param str conf: Name of config file without the file extension
+    :param dict conf: Name of config file without the file extension
     :param str env: Name of the environment within the config file
     """
-    if env not in conf:
+    if env not in conf.keys():
         raise ConfigurationException('Env does not exist in config file')
 
-    if 'drivername' not in conf:
+    if 'drivername' not in conf.keys():
         raise ConfigurationException('Missing drivername')
 
     drivername = conf['drivername']
@@ -74,17 +80,13 @@ def get_available_configs():
             for f in files]
 
 
-def _get_config_defaults(path):
+def _get_config_defaults(path, defaults=CONFIG_DEFAULTS):
     """Return the default_env, default_schema, and default_reflect from a
     config file.
 
     :param str path: Path for config file
+    :param dict defaults: Dict of default config
     """
-    defaults = {
-        'default_env': 'default',
-        'default_schema': None,
-        'default_reflect': False
-    }
     try:
         with open(path) as reader:
             conf = json.load(reader)
