@@ -1,20 +1,39 @@
 from builtins import super
 from argparse import Namespace
+from six import iteritems
+
+from .config_util import get_available_envs_factory, get_available_configs
+from .client import get_client_factory
 
 
-class ParseJSON(object):
-    def __init__(self, **kwargs):
-        return
+def merge_dicts(*args):
+    # should raise warning for duplicate keys
+    res_dict = {}
+    for d in args:
+        for k,v in iteritems(d):
+            res_dict[k] = v
+    return res_dict
 
-    def parse(self, **kwargs):
-        return
+def parse_config_entry(config_entry):
+    fname, defaults = config_entry
+    env = defaults.gets("default_env", None)
+    schema = defaults.get("default_schema", "default")
+    reflect = defaults.get("default_reflect", False)
+
+    client_factory = get_client_factory(env, schema, reflect)
+    env_factory = get_available_envs_factory("fname")
+
+    parsed_kwarg = {fname: client_factory,
+                    fname+"_envs": env_factory}
+    return parsed_kwarg
 
 
-class ParseConfig(ParseJSON):
+class ParseConfig(object):
     def __init__(self, **kwargs):
         return
 
     def _read_file(self):
+
         return
 
     def _read_redis(self):
