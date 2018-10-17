@@ -42,11 +42,11 @@ class SqlClient(Engine):
     configuration.
     """
     @extend_docs(create_engine)
-    def __init__(self, config_file, env='default', default_schema=None,
+    def __init__(self, config, env='default', default_schema=None,
                  reflect=False, **kwargs):
         """Instanciate a :class:`SqlClient` with the given params.
 
-        :param str config_file: Name of config file without the file extension
+        :param dict config: JSON config read in as a dict
         :param str env: Name of the environment within the config file
              (Default value = 'default')
         :param str default_schema: Name of default schema, used by the
@@ -58,7 +58,7 @@ class SqlClient(Engine):
         See :any:`sqlalchemy.create_engine` for ``**kwargs``:
         """
         #: Name of config file without file extension
-        self.config_file = config_file
+        self.config = config
 
         #: Name of environment within the config file
         self.env = env
@@ -97,16 +97,14 @@ class SqlClient(Engine):
             return self.get_table(key)
 
     def _get_url(self):
-        """Returns a SQLAlchemy URL from given env"""
-        path = full_path(str(self.config_file) + '.json')
-
-        try:
-            with open(path) as reader:
-                conf = json.load(reader)
-
-                return parse_config(conf, self.env)
-        except IOError:
-            raise ConfigurationException('Config file not found')
+        """Returns a SQLAlchemy URL from given env
+        
+        Notes
+        -----
+        - Needs to be generalized to not rely on file
+        - Easiest fix: to add `mode` variable to **kwargs
+        """
+        return parse_config(self.config, self.env)
 
     @property
     def default_schema(self):
