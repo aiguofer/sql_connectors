@@ -16,7 +16,7 @@ from memoized import memoized
 from .util import extend_docs
 from .exceptions import ConfigurationException
 
-from .config_util import full_path, parse_config
+from .config_util import parse_config
 
 
 __all__ = [
@@ -216,27 +216,3 @@ def _parse_table_name(table_name, schema=None):
         parts[-1],  # name
         schema or parts[0] if len(parts) == 2 else None  # schema
     )
-
-
-def get_client_factory(config_file, default_env='default', default_schema=None,
-                       default_reflect=False):
-    """Wrapper function to create a :any:`get_client` function using the given
-    ``config_file`` and setting the given defaults. This should be used in the submodule
-    for each data source.
-
-    :param str config_file: Name of config file without the extension
-    :param str default_env: Set default environment to use (Default value = 'default')
-    :param str default_schema: Set default schema to use  (Default value = None)
-    :param bool default_reflect: Set default for reflect  (Default value = False)
-    """
-    @extend_docs(SqlClient.__init__)
-    def get_client(env=default_env, default_schema=default_schema,
-                   reflect=default_reflect, **kwargs):
-        """Get a :any:`SqlClient` for the specified
-        environment. Defaults are based on what was passed to :any:`get_client_factory`.
-
-        See :any:`SqlClient.__init__` for params:
-        """
-        return SqlClient(config_file, env, default_schema, reflect, **kwargs)
-
-    return memoized(get_client, signature_preserving=True)

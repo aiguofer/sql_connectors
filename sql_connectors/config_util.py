@@ -16,7 +16,6 @@ __all__ = [
     'parse_config',
     'full_path',
     'get_available_configs',
-    'get_available_envs_factory',
     'get_key_value',
     'set_key_value'
 ]
@@ -95,26 +94,6 @@ def _get_config_defaults(path, defaults=CONFIG_DEFAULTS):
         raise ConfigurationException('Config file not found')
     except:
         raise ConfigurationException('Error reading {0}'.format(path))
-
-
-def get_available_envs_factory(config_file):
-    """Create a :any:`get_available_envs` function for the given config
-    file.
-
-    :param str config_file: Name of config file without the file extension
-    """
-    def get_available_envs():
-        """Return available environments in config file"""
-        path = full_path(str(config_file) + '.json')
-        try:
-            with open(path) as reader:
-                keys = list(json.load(reader))
-                non_envs = ['drivername', 'relative_paths', 'allowed_hosts',
-                            'default_env', 'default_schema', 'default_reflect']
-                return [key for key in keys if key not in non_envs]
-        except IOError:
-            raise ConfigurationException('Config file not found')
-    return get_available_envs
 
 
 def _get_username(conf):
