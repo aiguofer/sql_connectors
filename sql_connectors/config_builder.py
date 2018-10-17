@@ -151,6 +151,16 @@ class BuildFacade(object):
         return instance
 
 
+def get_fname(fpath):
+    return fpath.split("/")[-1].replace(".json", "")
+
+def get_default_params(config_path=None):
+    configs = glob(full_path("*json", config_path))
+    names = [get_fname(i) for i in configs]
+    return tuple({"name":name} for name in names)
+
 def default_facade(**kwargs):
-    cls = BuildFacade(**kwargs)
+    config_path = kwargs.get("config_path", None)
+    params = get_default_params(config_path)
+    cls = BuildFacade(params)
     return cls.build_factory_facade()
