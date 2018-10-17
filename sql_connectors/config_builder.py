@@ -1,16 +1,16 @@
+import json
 import os
 from argparse import Namespace
 from builtins import super
 from glob import glob
-from memoized import memoized
-from .util import extend_docs
-import json
 
+from memoized import memoized
 from six import iteritems
 
-from .client import SqlClient, get_client_factory
-from .config_util import full_path, get_available_configs, get_available_envs_factory
+from .client import SqlClient
+from .config_util import full_path
 from .exceptions import ConfigurationException
+from .util import extend_docs
 
 DEFAULT_CONFIG_DIR = "~/.config/sql_connectors"
 
@@ -52,8 +52,7 @@ def full_path(sub_path="", default_config_dir=DEFAULT_CONFIG_DIR):
 
     :param str sub_path: Subpath relative to the config base dir
     """
-    config_base_dir = os.environ.get('SQL_CONNECTORS_CONFIG_DIR',
-                                     default_config_dir)
+    config_base_dir = os.environ.get("SQL_CONNECTORS_CONFIG_DIR", default_config_dir)
 
     return os.path.join(os.path.expanduser(config_base_dir), sub_path)
 
@@ -85,7 +84,9 @@ class ParseConfig(object):
         return dict((k, config.get(k, defaults[k])) for k in defaults.keys())
 
     @staticmethod
-    def get_client_factory_kwargs(fname, defaults=CONFIG_DEFAULTS, config_dict=None, config_path=None):
+    def get_client_factory_kwargs(
+        fname, defaults=CONFIG_DEFAULTS, config_dict=None, config_path=None
+    ):
         if config_dict:
             config = config_dict
         else:
@@ -100,6 +101,7 @@ class ParseConfig(object):
         for key in ["config", "default_env", "default_schema", "default_reflect"]:
             assert key in kwargs.keys(), "{0} must be a kwarg".format(key)
         NS = Namespace(**kwargs)
+
         def get_client(
             env=NS.default_env,
             default_schema=NS.default_schema,
@@ -154,10 +156,12 @@ class BuildFacade(object):
 def get_fname(fpath):
     return fpath.split("/")[-1].replace(".json", "")
 
+
 def get_default_params(config_path=None):
     configs = glob(full_path("*json", config_path))
     names = [get_fname(i) for i in configs]
-    return tuple({"name":name} for name in names)
+    return tuple({"name": name} for name in names)
+
 
 def default_facade(**kwargs):
     config_path = kwargs.get("config_path", None)
