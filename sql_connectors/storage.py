@@ -20,26 +20,21 @@ from .exceptions import ConfigurationException
 from .util import extend_docs
 
 
-class Namespace:
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
-
-
 class Storage:
     def __init__(self, path_or_uri):
-        self.path_or_uri = path_or_uri
+        self._path_or_uri = path_or_uri
 
-        configs = self.fetch_configs()
+        configs = self._fetch_configs()
 
         connections = {}
         for name, conf in iteritems(configs):
             if isinstance(name, bytes):
                 name = name.decode("utf8")
-            defaults = self.get_config_defaults(conf)
-            env_getter = self.get_available_envs_factory(conf)
+            defaults = self._get_config_defaults(conf)
+            env_getter = self._get_available_envs_factory(conf)
             schema = defaults["default_schema"]
 
-            client_getter = self.get_client_factory(
+            client_getter = self._get_client_factory(
                 conf,
                 defaults["default_env"],
                 '"{0}"'.format(schema) if schema is not None else schema,
@@ -48,12 +43,12 @@ class Storage:
             connections["{}".format(name)] = client_getter
             connections["{}_envs".format(name)] = env_getter
 
-        self.connections = Namespace(**connections)
+        self.___dict__ = connections
 
-    def fetch_configs(self):
+    def _fetch_configs(self):
         raise NotImplementedError
 
-    def parse_config(self, conf, env):
+    def _parse_config(self, conf, env):
         """Get the specific environment, expand any relative paths, and return
         a url for create_engine
 
@@ -80,7 +75,7 @@ class Storage:
 
         return URL(**env_conf)
 
-    def get_available_envs_factory(self, conf):
+    def _get_available_envs_factory(self, conf):
         """Create a :any:`get_available_envs` function for the given config
         file.
 
@@ -126,7 +121,7 @@ class Storage:
             password = None
         return password
 
-    def get_config_defaults(self, conf):
+    def _get_config_defaults(self, conf):
         """Return the default_env, default_schema, and default_reflect from a
         config file.
 
@@ -139,7 +134,7 @@ class Storage:
         }
         return dict((k, conf.get(k, defaults[k])) for k in defaults)
 
-    def get_client_factory(
+    def _get_client_factory(
         self, conf, default_env="default", default_schema=None, default_reflect=False
     ):
         """Wrapper function to create a :any:`get_client` function using the given
@@ -165,35 +160,35 @@ class Storage:
             See :any:`SqlClient.__init__` for params:
             """
             return SqlClient(
-                self.parse_config(conf, env), default_schema, reflect, **kwargs
+                self._parse_config(conf, env), default_schema, reflect, **kwargs
             )
 
         return memoized(get_client, signature_preserving=True)
 
 
 class LocalStorage(Storage):
-    def full_path(self, sub_path):
+    def _full_path(self, sub_path):
         """Turn a path relative to the config base dir into a full path
 
         :param str sub_path: Subpath relative to the config base dir
         """
-        return os.path.join(os.path.expanduser(self.path_or_uri), sub_path)
+        return os.path.join(os.path.expanduser(self._path_or_uri), sub_path)
 
-    def fetch_configs(self):
+    def _fetch_configs(self):
         """Return available config file names with their default values as a
         list of tuples like (file_name, default_value_dict)
         """
-        files = glob(self.full_path("*.json"))
+        files = glob(self._full_path("*.json"))
 
         confs = {}
         for f in files:
             try:
                 name = f.split("/")[-1].replace(".json", "")
-                conf = self.read_json(f)
+                conf = self._read_json(f)
                 for rel_path in conf.get("relative_paths", []):
-                    for env in self.get_available_envs_factory(conf)():
+                    for env in self._get_available_envs_factory(conf)():
                         sub_path = get_key_value(conf[env], rel_path)
-                        set_key_value(conf[env], rel_path, self.full_path(sub_path))
+                        set_key_value(conf[env], rel_path, self._full_path(sub_path))
 
                 confs[name] = conf
             except ConfigurationException as e:
@@ -201,7 +196,7 @@ class LocalStorage(Storage):
 
         return confs
 
-    def read_json(self, path):
+    def _read_json(self, path):
         """Return the default_env, default_schema, and default_reflect from a
         config file.
 
@@ -217,8 +212,8 @@ class LocalStorage(Storage):
 
 
 class RedisStorage(Storage):
-    def fetch_configs(self):
-        conn = Redis.from_url(self.path_or_uri)
+    def _fetch_configs(self):
+        conn = Redis.from_url(self._path_or_uri)
         confs = {}
         for name in conn.keys():
             pulled_config = json.loads(conn.get(name))
