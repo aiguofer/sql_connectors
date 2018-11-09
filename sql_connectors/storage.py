@@ -1,6 +1,8 @@
+from __future__ import unicode_literals
+
 import json
 import os
-from builtins import open
+from builtins import bytes, open
 from getpass import getpass
 from glob import glob
 from warnings import warn
@@ -29,6 +31,8 @@ class Storage:
 
         connections = {}
         for name, conf in iteritems(configs):
+            if isinstance(name, bytes):
+                name = name.decode("utf8")
             defaults = self.get_config_defaults(conf)
             env_getter = self.get_available_envs_factory(conf)
             schema = defaults["default_schema"]
@@ -39,8 +43,8 @@ class Storage:
                 '"{0}"'.format(schema) if schema is not None else schema,
                 defaults["default_reflect"],
             )
-            connections[name] = client_getter
-            connections[name + "_envs"] = env_getter
+            connections["{}".format(name)] = client_getter
+            connections["{}_envs".format(name)] = env_getter
 
         self.connections = Namespace(**connections)
 
