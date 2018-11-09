@@ -1,12 +1,13 @@
 import json
 import os
-from builtins import input, open
+from builtins import open
 from getpass import getpass
 from glob import glob
 from warnings import warn
 
 from future.utils import iteritems
 from memoized import memoized
+from six.moves import input
 from sqlalchemy.engine.url import URL
 
 from .client import SqlClient
