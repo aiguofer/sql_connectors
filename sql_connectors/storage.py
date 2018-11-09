@@ -19,6 +19,8 @@ from .config_util import get_key_value, set_key_value
 from .exceptions import ConfigurationException
 from .util import extend_docs
 
+__all__ = ["Storage", "LocalStorage"]
+
 
 class Storage:
     def __init__(self, path_or_uri):
