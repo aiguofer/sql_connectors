@@ -45,7 +45,7 @@ class Storage:
             connections["{}".format(name)] = client_getter
             connections["{}_envs".format(name)] = env_getter
 
-        self.___dict__ = connections
+        self.__dict__ = connections
 
     def _fetch_configs(self):
         raise NotImplementedError
