@@ -22,6 +22,11 @@ from .util import extend_docs
 __all__ = ["Storage", "LocalStorage"]
 
 
+class Namespace:
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+
+
 class Storage:
     def __init__(self, path_or_uri):
         self._path_or_uri = path_or_uri
@@ -45,7 +50,7 @@ class Storage:
             connections["{}".format(name)] = client_getter
             connections["{}_envs".format(name)] = env_getter
 
-        self.__dict__ = connections
+        self.connections = Namespace(**connections)
 
     def _fetch_configs(self):
         raise NotImplementedError
