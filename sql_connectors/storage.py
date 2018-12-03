@@ -181,10 +181,20 @@ class LocalStorage(Storage):
         """
         return os.path.join(os.path.expanduser(self._path_or_uri), sub_path)
 
+    def _check_path(self):
+        """Check if the provided path exists. If not, raise ConfigurationException.
+        """
+        path = os.path.dirname(self._full_path(""))
+
+        if not os.path.exists(path):
+            raise ConfigurationException("Config dir {} not found".format(path))
+
     def _fetch_configs(self):
         """Return available config file names with their default values as a
         list of tuples like (file_name, default_value_dict)
         """
+        self._check_path()
+
         files = glob(self._full_path("*.json"))
 
         confs = {}
