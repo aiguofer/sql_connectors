@@ -16,7 +16,7 @@ from sqlalchemy.engine.url import URL
 
 from .client import SqlClient
 from .config_util import get_key_value, set_key_value
-from .exceptions import ConfigurationException
+from .exceptions import ConfigurationException, SQLConnectorException
 from .util import extend_docs
 
 __all__ = ["Storage", "LocalStorage"]
@@ -25,6 +25,14 @@ __all__ = ["Storage", "LocalStorage"]
 class Namespace:
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
+
+    def __getattr__(self, name):
+        # this breaks autocompletion
+        raise SQLConnectorException("Connection {} does not exist".format(name))
+
+    def __dir__(self):
+        # fix autocompletion due to __getattr__
+        return self.__dict__.keys()
 
 
 class Storage:
