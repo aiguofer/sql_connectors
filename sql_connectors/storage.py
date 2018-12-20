@@ -302,4 +302,5 @@ def recursive_decrypt(d, key):
             d[k] = f.decrypt(str(v).encode('utf-8')).decode()
         else:
             d[k] = f.decrypt(v).decode('utf-8')
+
     return d
