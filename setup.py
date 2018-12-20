@@ -57,6 +57,12 @@ dependency_links = [re.sub(vcs, '', x.strip()).replace('.git', '/tarball/master'
 
 install_requires += [x.split('=')[-1].replace('-', '==') for x in dependency_links]
 
+# extras
+redis = [
+    'redis>=2.10.5,<3.0.0',
+    'cryptography'
+]
+
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
@@ -92,7 +98,8 @@ setup(
     description="A simple wrapper for SQL connections using SQLAlchemy and Pandas read_sql to standardize SQL workflow.",
     install_requires=install_requires,
     extras_require={
-        'dev': dev_requires
+        'dev': dev_requires + redis,
+        'redis': redis
     },
     dependency_links=dependency_links,
     license="MIT license",
