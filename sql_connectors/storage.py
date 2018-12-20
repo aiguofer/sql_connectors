@@ -8,6 +8,9 @@ from getpass import getpass
 from glob import glob
 from warnings import warn
 
+import logging
+from ast import literal_eval
+
 from future.utils import iteritems
 from memoized import memoized
 from redis import Redis
@@ -241,9 +244,22 @@ class RedisStorage(Storage):
         conn = Redis.from_url(self._path_or_uri)
         confs = {}
         for name in conn.keys():
+            logging.debug('Processing key: %s', name)
             pulled_config = json.loads(conn.get(name))
 
-            for _file in pulled_config.get("relative_paths", []):
+            self.fernet_key = os.environ.get('FERNET_KEY', '')
+
+            if self.fernet_key:
+                pulled_config = recursive_decrypt(pulled_config, self.fernet_key)
+
+            files = pulled_config.get("relative_paths", [])
+
+            if isinstance(files, str):
+                logging.debug('Relative paths are of type str, running literal_eval.')
+                files = literal_eval(files)
+
+            for _file in files:
+                logging.debug('Processing file: %s')
                 for k, v in iteritems(pulled_config):
                     if isinstance(v, dict):
                         cert = get_key_value(pulled_config[k], _file)
@@ -259,3 +275,31 @@ class RedisStorage(Storage):
             confs[name] = pulled_config
 
         return confs
+
+def recursive_decrypt(d, key):
+    """Function to recursively traverse a nested dictionary and apply fernet
+    key decryption to each element. Decodes values so they can be JSON serializable.
+
+    Parameters
+    ----------
+    d : dict
+        Dictionary to traverse and encrypt.
+    key: str
+        32 bit fernet key to use for decryption.
+    Returns
+    -------
+    dict
+        The original dictionary with the values decrypted.
+    """
+    from cryptography.fernet import Fernet
+
+    f = Fernet(key=key.encode('utf-8'))
+
+    for k, v in iteritems(d):
+        if isinstance(v, dict):
+            d[k] = recursive_decrypt(v, key)
+        elif not isinstance(v, bytes):
+            d[k] = f.decrypt(str(v).encode('utf-8')).decode()
+        else:
+            d[k] = f.decrypt(v).decode('utf-8')
+    return d
