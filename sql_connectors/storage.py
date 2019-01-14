@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 
 import json
 import os
-import tempfile
 from builtins import bytes, open
 from getpass import getpass
 from glob import glob
@@ -10,7 +9,6 @@ from warnings import warn
 
 from future.utils import iteritems
 from memoized import memoized
-from redis import Redis
 from six.moves import input
 from sqlalchemy.engine.url import URL
 
@@ -234,28 +232,3 @@ class LocalStorage(Storage):
             raise ConfigurationException("Config file not found")
         except ValueError as e:
             raise ConfigurationException("Error reading {0}:\n{1}".format(path, e))
-
-
-class RedisStorage(Storage):
-    def _fetch_configs(self):
-        conn = Redis.from_url(self._path_or_uri)
-        confs = {}
-        for name in conn.keys():
-            pulled_config = json.loads(conn.get(name))
-
-            for _file in pulled_config.get("relative_paths", []):
-                for k, v in iteritems(pulled_config):
-                    if isinstance(v, dict):
-                        cert = get_key_value(pulled_config[k], _file)
-
-                        # this opens a temporary file for us, returns a tuple where tmp is filename
-                        _, tmp = tempfile.mkstemp(prefix="", suffix=".crt")
-
-                        with open(tmp, "w+") as f:
-                            f.write(cert)
-
-                        set_key_value(pulled_config[k], _file, tmp)
-
-            confs[name] = pulled_config
-
-        return confs
