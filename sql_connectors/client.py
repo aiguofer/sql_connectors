@@ -1,33 +1,22 @@
 # -*- coding: utf-8 -*-
 
-from builtins import super, str
-
-import json
+from builtins import str, super
 from contextlib import contextmanager
 
 import pandas as pd
-from sqlalchemy import create_engine, MetaData, Table, inspect
+from sqlalchemy import MetaData, Table, create_engine, inspect
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from memoized import memoized
-
 from .util import extend_docs
-from .exceptions import ConfigurationException
 
-from .config_util import full_path, parse_config
-
-
-__all__ = [
-    'SqlClient',
-    'get_client_factory'
-]
+__all__ = ["SqlClient"]
 
 
 class SqlClient(Engine):
     """This is a convenience wrapper around :class:`sqlalchemy.engine.Engine`.
-    Given a config_file and env, it reads the connection information from the
+    Given a config and env, it reads the connection information from the
     configuration file and creates an ``Engine``; it sets up a
     :class:`sqlalchemy.engine.reflection.Inspector` that enables you to explore the
     data source; it sets up a :class:`sqlalchemy.schema.MetaData` to hold metadata
@@ -41,14 +30,12 @@ class SqlClient(Engine):
     source. When :any:`get_client` is called, it'll maintain a singleton for each specific
     configuration.
     """
+
     @extend_docs(create_engine)
-    def __init__(self, config_file, env='default', default_schema=None,
-                 reflect=False, **kwargs):
+    def __init__(self, url, default_schema=None, reflect=False, **kwargs):
         """Instanciate a :class:`SqlClient` with the given params.
 
-        :param str config_file: Name of config file without the file extension
-        :param str env: Name of the environment within the config file
-             (Default value = 'default')
+        :param str url: Url to connect
         :param str default_schema: Name of default schema, used by the
              :class:`sqlalchemy.schema.MetaData` instance and by :any:`get_table`
              (Default value = None)
@@ -57,13 +44,7 @@ class SqlClient(Engine):
 
         See :any:`sqlalchemy.create_engine` for ``**kwargs``:
         """
-        #: Name of config file without file extension
-        self.config_file = config_file
-
-        #: Name of environment within the config file
-        self.env = env
-
-        engine = create_engine(self._get_url(), **kwargs)
+        engine = create_engine(url, **kwargs)
         self.__dict__.update(engine.__dict__)
 
         # wrap in try catch because jdv fails to initialize
@@ -87,7 +68,7 @@ class SqlClient(Engine):
         self.default_schema = default_schema
 
     def __repr__(self):
-        return super().__repr__().replace('Engine', 'SqlClient')
+        return super().__repr__().replace("Engine", "SqlClient")
 
     def __getitem__(self, key):
         """Return the given table"""
@@ -95,18 +76,6 @@ class SqlClient(Engine):
             return self.metadata.tables[key]
         else:
             return self.get_table(key)
-
-    def _get_url(self):
-        """Returns a SQLAlchemy URL from given env"""
-        path = full_path(str(self.config_file) + '.json')
-
-        try:
-            with open(path) as reader:
-                conf = json.load(reader)
-
-                return parse_config(conf, self.env)
-        except IOError:
-            raise ConfigurationException('Config file not found')
 
     @property
     def default_schema(self):
@@ -156,10 +125,9 @@ class SqlClient(Engine):
         """
         tbl = self.get_table(name, schema=schema)
         bases = (declarative_base(),)
-        attrs = {'__table__': tbl,
-                 '__mapper_args__': {}}
+        attrs = {"__table__": tbl, "__mapper_args__": {}}
         if primarykey:
-            attrs['__mapper_args__']['primary_key'] = [
+            attrs["__mapper_args__"]["primary_key"] = [
                 getattr(tbl.c, x) for x in primarykey
             ]
         return type(name, bases, attrs)
@@ -213,32 +181,8 @@ def _parse_table_name(table_name, schema=None):
     :param str table_name: Name of the table, can include schema name with dot notation
     :param str schema: Explicitly give schema name (Default value = None)
     """
-    parts = table_name.split('.')
+    parts = table_name.split(".")
     return (
         parts[-1],  # name
-        schema or parts[0] if len(parts) == 2 else None  # schema
+        schema or parts[0] if len(parts) == 2 else None,  # schema
     )
-
-
-def get_client_factory(config_file, default_env='default', default_schema=None,
-                       default_reflect=False):
-    """Wrapper function to create a :any:`get_client` function using the given
-    ``config_file`` and setting the given defaults. This should be used in the submodule
-    for each data source.
-
-    :param str config_file: Name of config file without the extension
-    :param str default_env: Set default environment to use (Default value = 'default')
-    :param str default_schema: Set default schema to use  (Default value = None)
-    :param bool default_reflect: Set default for reflect  (Default value = False)
-    """
-    @extend_docs(SqlClient.__init__)
-    def get_client(env=default_env, default_schema=default_schema,
-                   reflect=default_reflect, **kwargs):
-        """Get a :any:`SqlClient` for the specified
-        environment. Defaults are based on what was passed to :any:`get_client_factory`.
-
-        See :any:`SqlClient.__init__` for params:
-        """
-        return SqlClient(config_file, env, default_schema, reflect, **kwargs)
-
-    return memoized(get_client, signature_preserving=True)

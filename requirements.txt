@@ -3,3 +3,4 @@ future
 memoized
 pandas
 SQLAlchemy
+traitlets
