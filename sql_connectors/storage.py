@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import json
 import os
-from builtins import bytes, open
+from builtins import bytes, open, super
 from getpass import getpass
 from glob import glob
 from warnings import warn
@@ -20,7 +20,7 @@ from .util import extend_docs
 __all__ = ["Storage", "LocalStorage"]
 
 
-class Namespace:
+class Namespace(object):
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
 
@@ -33,7 +33,7 @@ class Namespace:
         return self.__dict__.keys()
 
 
-class Storage:
+class Storage(object):
     def __init__(self, path_or_uri):
         self._path_or_uri = path_or_uri
 
@@ -180,6 +180,9 @@ class Storage:
 
 
 class LocalStorage(Storage):
+    def __init__(self, path_or_uri):
+        super().__init__(path_or_uri)
+
     def _full_path(self, sub_path):
         """Turn a path relative to the config base dir into a full path
 
