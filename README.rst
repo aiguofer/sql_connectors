@@ -13,7 +13,6 @@ SQL Connectors
         :target: https://sql-connectors.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-
 .. image:: https://pyup.io/repos/github/aiguofer/sql_connectors/shield.svg
      :target: https://pyup.io/repos/github/aiguofer/sql_connectors/
      :alt: Updates
@@ -72,7 +71,11 @@ You can clone the public repository and install in development mode:
 Configurations
 --------------
 
-You'll need to set your configuration files in ``~/.config/sql_connectors``. Optionally, you can specify a different configuration directory with the ``SQL_CONNECTORS_CONFIG_DIR`` environment variable. The ``example_connection.json`` file is provided as a template; feel free to replace this with your own connection details and re-name the file.
+Configurations can be stored wherever you want by implementing your own ``Storage``. However, the default is ``LocalStorage`` reading in configuration files from ``~/.config/sql_connectors``.
+
+You can change the ``Storage`` class using the ``SQL_CONNECTORS_STORAGE`` environment variable (for example ``sql_connectors.storage.LocalStorage``), and you can specify a different configuration directory or URI with ``SQL_CONNECTORS_PATH_OR_URI``.
+
+The ``example_connection.json`` file is provided as a template; feel free to replace this with your own connection details and re-name the file.
 
 The contents of the example file are:
 
@@ -134,8 +137,8 @@ Here's a basic usage example assuming the example config file exists:
 
 .. code:: python
 
-   from sql_connectors import example_connection
-   client = example_connection()
+   from sql_connectors import connections
+   client = connections.example_connection()
    client.read_sql('select 1')
 
 
@@ -143,10 +146,10 @@ Here's a more complex example that's pretty redundant but shows more functionali
 
 .. code:: python
 
-   from sql_connectors import example_connection, example_connection_envs
+   from sql_connectors import connections
 
-   available_envs = example_connection_envs()
-   client = example_connection(env=available_envs[0], reflect=True)
+   available_envs = connections.example_connection_envs()
+   client = connections.example_connection(env=available_envs[0], reflect=True)
 
    client.read_sql('select 1').to_sql('example_table', client, if_exists='replace')
    available_tables = client.table_names()
