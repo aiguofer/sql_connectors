@@ -1,5 +1,5 @@
 decorator
-future
+future==0.18.2
 memoized
 pandas
 SQLAlchemy
