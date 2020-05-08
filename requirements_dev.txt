@@ -7,5 +7,5 @@ tox>=2.9.1
 coverage>=4.5.1
 Sphinx>=1.7.1
 twine>=1.10.0
-pytest
+pytest==5.4.2
 git+https://github.com/dadadel/pyment.git#egg=pyment-0.3.2
