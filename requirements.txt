@@ -1,6 +1,6 @@
 decorator
 future
 memoized
-pandas
+pandas==0.23.4
 SQLAlchemy
 traitlets
