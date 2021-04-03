@@ -1,4 +1,4 @@
-decorator
+decorator==5.0.4
 future
 memoized
 pandas
