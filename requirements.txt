@@ -2,5 +2,5 @@ decorator
 future
 memoized
 pandas
-SQLAlchemy
+SQLAlchemy==1.4.22
 traitlets
