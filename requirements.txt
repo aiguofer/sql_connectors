@@ -3,4 +3,4 @@ future
 memoized
 pandas
 SQLAlchemy
-traitlets
+traitlets==5.1.0
